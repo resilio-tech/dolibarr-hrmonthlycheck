@@ -1,0 +1,87 @@
+# Copyright (C) 2026 Resilio SA
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+#
+# Generic
+#
+
+ModuleHrMonthlyCheckName = Contrôle RH mensuel
+ModuleHrMonthlyCheckDesc = Contrôle mensuel de leurs informations RH par les employés
+HrMonthlyCheckDescription = Le 15 de chaque mois, chaque employé reçoit le récapitulatif de ses informations RH et le confirme ou demande une modification. Le 21, les RH sont notifiés sur Zulip pour consulter les réponses.
+Permission57000001 = Voir les réponses de tous les employés au contrôle mensuel
+
+#
+# Setup
+#
+
+HrMonthlyCheckSetup = Configuration du contrôle RH mensuel
+HrMonthlyCheckAbout = À propos du contrôle RH mensuel
+HrMonthlyCheckSetupPage = Les deux tâches planifiées (le 15 et le 21) sont désactivées par défaut. Activez-les depuis la page des travaux planifiés une fois cette configuration terminée.
+HrMonthlyCheckChannel = Canal du récapitulatif envoyé aux employés
+HrMonthlyCheckEmailAndZulip = Email et Zulip
+HrMonthlyCheckWorkRateField = Attribut supplémentaire utilisateur contenant le taux d'activité
+HrMonthlyCheckByodField = Attribut supplémentaire utilisateur contenant le BYOD
+HrMonthlyCheckUnpaidLeaveTypes = Types de congés comptés comme congés non payés
+HrMonthlyCheckZulipSetup = Zulip (messages privés aux employés et notification RH)
+HrMonthlyCheckZulipSite = URL du site Zulip
+HrMonthlyCheckZulipBotEmail = Email du bot
+HrMonthlyCheckZulipApiKey = Clé API du bot
+HrMonthlyCheckZulipHrStream = Stream RH
+HrMonthlyCheckZulipHrTopic = Topic RH
+HrMonthlyCheckKeepCurrentSecret = Laisser vide pour conserver la valeur actuelle
+
+#
+# Recap
+#
+
+HrMonthlyCheckMyCheck = Mon contrôle RH mensuel
+HrMonthlyCheckAnswers = Réponses au contrôle RH mensuel
+HrMonthlyCheckWorkRate = Taux d'activité
+HrMonthlyCheckByod = BYOD
+HrMonthlyCheckUnpaidLeave = Congés non payés du mois
+HrMonthlyCheckStartDate = Date d'entrée
+HrMonthlyCheckEndDate = Date de départ
+HrMonthlyCheckNbDays = %s jour(s)
+HrMonthlyCheckConfirmed = Confirmé
+HrMonthlyCheckChangeRequested = Modification demandée
+HrMonthlyCheckNoAnswer = Pas de réponse
+
+#
+# Messages
+#
+
+HrMonthlyCheckEmailSubject = Vérification de vos informations RH - %s
+HrMonthlyCheckGreeting = Bonjour %s,
+HrMonthlyCheckIntro = Voici les informations RH que nous avons pour vous pour %s. Merci de les vérifier et de nous signaler toute erreur.
+HrMonthlyCheckConfirmButton = Je confirme que les informations sont correctes
+HrMonthlyCheckChangeButton = Je souhaite une modification
+HrMonthlyCheckHrNotification = Les employés ont répondu au contrôle RH mensuel de %s : %s demande(s) de modification.
+HrMonthlyCheckSeeAnswers = Voir les réponses dans Dolibarr
+
+#
+# Pages
+#
+
+HrMonthlyCheckMyCheckTitle = Mes informations RH - %s
+HrMonthlyCheckNotConcerned = Vous n'êtes pas un employé en activité ce mois-ci, il n'y a rien à vérifier.
+HrMonthlyCheckConfirmQuestion = Confirmez-vous que toutes ces informations sont correctes ?
+HrMonthlyCheckChangeDescription = Décrivez la modification à apporter
+HrMonthlyCheckYourAnswer = Votre réponse
+HrMonthlyCheckThanks = Merci, votre réponse a été enregistrée.
+HrMonthlyCheckAnswersTitle = Contrôle RH mensuel - %s
+HrMonthlyCheckAnswer = Réponse
+HrMonthlyCheckChangeRequests = Demandes de modification
+HrMonthlyCheckArrivalsAndDepartures = Arrivées et départs du mois
+HrMonthlyCheckAllEmployees = Tous les employés

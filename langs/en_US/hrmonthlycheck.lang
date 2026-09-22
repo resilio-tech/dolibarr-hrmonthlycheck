@@ -1,0 +1,87 @@
+# Copyright (C) 2026 Resilio SA
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+#
+# Generic
+#
+
+ModuleHrMonthlyCheckName = HR Monthly Check
+ModuleHrMonthlyCheckDesc = Monthly check of their HR information by the employees
+HrMonthlyCheckDescription = On the 15th of each month, every employee receives the recap of their HR information and confirms it or asks for a change. On the 21st, HR is notified on Zulip to review the answers.
+Permission57000001 = See the monthly check answers of all employees
+
+#
+# Setup
+#
+
+HrMonthlyCheckSetup = HR Monthly Check setup
+HrMonthlyCheckAbout = About HR Monthly Check
+HrMonthlyCheckSetupPage = The two scheduled jobs (on the 15th and on the 21st) are disabled by default. Enable them from the scheduled jobs page once this setup is complete.
+HrMonthlyCheckChannel = Channel of the recap sent to the employees
+HrMonthlyCheckEmailAndZulip = Email and Zulip
+HrMonthlyCheckWorkRateField = User extrafield holding the work rate
+HrMonthlyCheckByodField = User extrafield holding BYOD
+HrMonthlyCheckUnpaidLeaveTypes = Leave types counted as unpaid leave
+HrMonthlyCheckZulipSetup = Zulip (direct messages to the employees and HR notification)
+HrMonthlyCheckZulipSite = Zulip site URL
+HrMonthlyCheckZulipBotEmail = Bot email
+HrMonthlyCheckZulipApiKey = Bot API key
+HrMonthlyCheckZulipHrStream = HR stream
+HrMonthlyCheckZulipHrTopic = HR topic
+HrMonthlyCheckKeepCurrentSecret = Leave empty to keep the current value
+
+#
+# Recap
+#
+
+HrMonthlyCheckMyCheck = My monthly HR check
+HrMonthlyCheckAnswers = Monthly HR check answers
+HrMonthlyCheckWorkRate = Work rate
+HrMonthlyCheckByod = BYOD
+HrMonthlyCheckUnpaidLeave = Unpaid leave in the month
+HrMonthlyCheckStartDate = Start date
+HrMonthlyCheckEndDate = End date
+HrMonthlyCheckNbDays = %s day(s)
+HrMonthlyCheckConfirmed = Confirmed
+HrMonthlyCheckChangeRequested = Change requested
+HrMonthlyCheckNoAnswer = No answer
+
+#
+# Messages
+#
+
+HrMonthlyCheckEmailSubject = Check of your HR information - %s
+HrMonthlyCheckGreeting = Hello %s,
+HrMonthlyCheckIntro = Here is the HR information we have for you for %s. Please check it and tell us if something is wrong.
+HrMonthlyCheckConfirmButton = I confirm the information is correct
+HrMonthlyCheckChangeButton = I want to make a change
+HrMonthlyCheckHrNotification = The employees have answered the HR monthly check of %s: %s change request(s).
+HrMonthlyCheckSeeAnswers = See the answers in Dolibarr
+
+#
+# Pages
+#
+
+HrMonthlyCheckMyCheckTitle = My HR information - %s
+HrMonthlyCheckNotConcerned = You are not an employee working during this month, there is nothing to check.
+HrMonthlyCheckConfirmQuestion = Do you confirm that all this information is correct?
+HrMonthlyCheckChangeDescription = Describe the change to make
+HrMonthlyCheckYourAnswer = Your answer
+HrMonthlyCheckThanks = Thank you, your answer has been recorded.
+HrMonthlyCheckAnswersTitle = HR monthly check - %s
+HrMonthlyCheckAnswer = Answer
+HrMonthlyCheckChangeRequests = Change requests
+HrMonthlyCheckArrivalsAndDepartures = Arrivals and departures in the month
+HrMonthlyCheckAllEmployees = All employees

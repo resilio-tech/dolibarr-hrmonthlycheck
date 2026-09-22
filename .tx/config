@@ -1,0 +1,9 @@
+[main]
+host = https://www.transifex.com
+lang_map = uz: uz_UZ
+
+[hrmonthlycheck.hrmonthlycheck]
+file_filter = langs/<lang>/hrmonthlycheck.lang
+source_file = langs/en_US/hrmonthlycheck.lang
+source_lang = en_US
+type = MOZILLAPROPERTIES
