@@ -21,7 +21,6 @@
  * \brief      Scheduled jobs: send the monthly recap to the employees, then notify HR.
  */
 
-require_once DOL_DOCUMENT_ROOT.'/core/class/CMailFile.class.php';
 require_once __DIR__.'/HrMonthlyCheckAnswer.class.php';
 require_once __DIR__.'/HrMonthlyCheckRecap.class.php';
 require_once __DIR__.'/ZulipNotifier.class.php';
@@ -65,18 +64,9 @@ class HrMonthlyCheckCron
 		$this->output = '';
 		$this->error = '';
 
-		$channel = getDolGlobalString('HRMONTHLYCHECK_CHANNEL', 'email');
-		$useEmail = in_array($channel, array('email', 'both'));
-		$useZulip = in_array($channel, array('zulip', 'both'));
-
-		$notifier = $useZulip ? ZulipNotifier::fromConf() : null;
-		if ($useZulip && $notifier === null) {
+		$notifier = ZulipNotifier::fromConf();
+		if ($notifier === null) {
 			$this->error = 'Zulip is not configured';
-			return -1;
-		}
-		$from = getDolGlobalString('MAIN_MAIL_EMAIL_FROM');
-		if ($useEmail && $from === '') {
-			$this->error = 'The sender email of Dolibarr (MAIN_MAIL_EMAIL_FROM) is not configured';
 			return -1;
 		}
 
@@ -90,7 +80,6 @@ class HrMonthlyCheckCron
 
 		$periodLabel = hrmonthlycheckPeriodLabel($period, $langs);
 		$url = dol_buildpath('/hrmonthlycheck/mycheck.php', 3).'?period='.$period;
-		$subject = $langs->transnoentities('HrMonthlyCheckEmailSubject', $periodLabel);
 
 		$sent = 0;
 		$failures = array();
@@ -101,22 +90,11 @@ class HrMonthlyCheckCron
 				continue;
 			}
 
-			$lines = $loader->lines($recap, $langs);
-			$ok = true;
-			if ($useZulip && !$notifier->sendDirect($recap->email, $this->zulipMessage($recap, $lines, $periodLabel, $url))) {
+			if (!$notifier->sendDirect($recap->email, $this->zulipMessage($recap, $periodLabel, $url))) {
 				$failures[] = $name.': '.$notifier->getError();
-				$ok = false;
+				continue;
 			}
-			if ($useEmail) {
-				$mail = new CMailFile($subject, $recap->email, $from, $this->emailMessage($recap, $lines, $periodLabel, $url), array(), array(), array(), '', '', 0, 1, '', '', 'use'.$recap->id);
-				if (!$mail->sendfile()) {
-					$failures[] = $name.': '.$mail->error;
-					$ok = false;
-				}
-			}
-			if ($ok) {
-				$sent++;
-			}
+			$sent++;
 		}
 
 		$this->output = $sent.' employee(s) notified for '.$period;
@@ -172,49 +150,19 @@ class HrMonthlyCheckCron
 	/**
 	 * Zulip message sent to an employee.
 	 *
-	 * @param stdClass             $recap       Recap of the employee
-	 * @param array<string,string> $lines       Recap lines
-	 * @param string               $periodLabel Month and year
-	 * @param string               $url         Page where the employee answers
+	 * @param stdClass $recap       Recap of the employee
+	 * @param string   $periodLabel Month and year
+	 * @param string   $url         Page where the employee answers
 	 * @return string Zulip Markdown
 	 */
-	private function zulipMessage(stdClass $recap, array $lines, string $periodLabel, string $url): string
+	private function zulipMessage(stdClass $recap, string $periodLabel, string $url): string
 	{
 		global $langs;
 
 		$content = $langs->transnoentities('HrMonthlyCheckGreeting', $recap->firstname)."\n\n";
-		$content .= $langs->transnoentities('HrMonthlyCheckIntro', $periodLabel)."\n\n";
-		foreach ($lines as $label => $value) {
-			$content .= '- **'.$label.'**: '.$value."\n";
-		}
-		$content .= "\n[".$langs->transnoentities('HrMonthlyCheckConfirmButton').']('.$url.'&answer=confirm)';
+		$content .= $langs->transnoentities('HrMonthlyCheckMessageIntro', $periodLabel)."\n\n";
+		$content .= '['.$langs->transnoentities('HrMonthlyCheckConfirmButton').']('.$url.'&answer=confirm)';
 		$content .= ' | ['.$langs->transnoentities('HrMonthlyCheckChangeButton').']('.$url.'&answer=change)';
-
-		return $content;
-	}
-
-	/**
-	 * Email sent to an employee.
-	 *
-	 * @param stdClass             $recap       Recap of the employee
-	 * @param array<string,string> $lines       Recap lines
-	 * @param string               $periodLabel Month and year
-	 * @param string               $url         Page where the employee answers
-	 * @return string HTML
-	 */
-	private function emailMessage(stdClass $recap, array $lines, string $periodLabel, string $url): string
-	{
-		global $langs;
-
-		$content = '<p>'.dol_escape_htmltag($langs->transnoentities('HrMonthlyCheckGreeting', $recap->firstname)).'</p>';
-		$content .= '<p>'.dol_escape_htmltag($langs->transnoentities('HrMonthlyCheckIntro', $periodLabel)).'</p>';
-		$content .= '<ul>';
-		foreach ($lines as $label => $value) {
-			$content .= '<li><strong>'.dol_escape_htmltag($label).'</strong>: '.dol_escape_htmltag($value).'</li>';
-		}
-		$content .= '</ul>';
-		$content .= '<p><a href="'.dol_escape_htmltag($url.'&answer=confirm').'">'.dol_escape_htmltag($langs->transnoentities('HrMonthlyCheckConfirmButton')).'</a>';
-		$content .= ' | <a href="'.dol_escape_htmltag($url.'&answer=change').'">'.dol_escape_htmltag($langs->transnoentities('HrMonthlyCheckChangeButton')).'</a></p>';
 
 		return $content;
 	}

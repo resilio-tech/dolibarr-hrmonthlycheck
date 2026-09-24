@@ -29,8 +29,6 @@ Permission57000001 = See the monthly check answers of all employees
 HrMonthlyCheckSetup = HR Monthly Check setup
 HrMonthlyCheckAbout = About HR Monthly Check
 HrMonthlyCheckSetupPage = The two scheduled jobs (on the 15th and on the 21st) are disabled by default. Enable them from the scheduled jobs page once this setup is complete.
-HrMonthlyCheckChannel = Channel of the recap sent to the employees
-HrMonthlyCheckEmailAndZulip = Email and Zulip
 HrMonthlyCheckWorkRateField = User extrafield holding the work rate
 HrMonthlyCheckByodField = User extrafield holding BYOD
 HrMonthlyCheckUnpaidLeaveTypes = Leave types counted as unpaid leave
@@ -62,9 +60,9 @@ HrMonthlyCheckNoAnswer = No answer
 # Messages
 #
 
-HrMonthlyCheckEmailSubject = Check of your HR information - %s
 HrMonthlyCheckGreeting = Hello %s,
 HrMonthlyCheckIntro = Here is the HR information we have for you for %s. Please check it and tell us if something is wrong.
+HrMonthlyCheckMessageIntro = Your HR information for %s is ready to be checked. Please open it in Dolibarr and tell us if something is wrong.
 HrMonthlyCheckConfirmButton = I confirm the information is correct
 HrMonthlyCheckChangeButton = I want to make a change
 HrMonthlyCheckHrNotification = The employees have answered the HR monthly check of %s: %s change request(s).

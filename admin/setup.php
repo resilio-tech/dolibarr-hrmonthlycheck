@@ -70,11 +70,6 @@ $backtopage = GETPOST('backtopage', 'alpha');
  */
 
 if ($action == 'update') {
-	$channel = GETPOST('channel', 'aZ09');
-	if (!in_array($channel, array('email', 'zulip', 'both'))) {
-		$channel = 'email';
-	}
-	dolibarr_set_const($db, 'HRMONTHLYCHECK_CHANNEL', $channel, 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_WORKRATE_FIELD', GETPOST('workrate_field', 'aZ09'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_BYOD_FIELD', GETPOST('byod_field', 'aZ09'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_UNPAID_LEAVE_TYPES', implode(',', array_map('intval', GETPOST('unpaid_leave_types', 'array:int'))), 'chaine', 0, '', $conf->entity);
@@ -124,14 +119,6 @@ print '<input type="hidden" name="action" value="update">';
 
 print '<table class="noborder centpercent">';
 print '<tr class="liste_titre"><td class="titlefield">'.$langs->trans("Parameter").'</td><td>'.$langs->trans("Value").'</td></tr>';
-
-$channels = array(
-	'email' => $langs->trans('Email'),
-	'zulip' => 'Zulip',
-	'both' => $langs->trans('HrMonthlyCheckEmailAndZulip'),
-);
-print '<tr class="oddeven"><td>'.$langs->trans("HrMonthlyCheckChannel").'</td>';
-print '<td>'.$form->selectarray('channel', $channels, getDolGlobalString('HRMONTHLYCHECK_CHANNEL', 'email')).'</td></tr>';
 
 print '<tr class="oddeven"><td>'.$langs->trans("HrMonthlyCheckWorkRateField").'</td>';
 print '<td>'.$form->selectarray('workrate_field', $userFields, getDolGlobalString('HRMONTHLYCHECK_WORKRATE_FIELD'), 1, 0, 0, '', 1).'</td></tr>';

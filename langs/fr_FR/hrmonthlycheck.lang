@@ -29,8 +29,6 @@ Permission57000001 = Voir les réponses de tous les employés au contrôle mensu
 HrMonthlyCheckSetup = Configuration du contrôle RH mensuel
 HrMonthlyCheckAbout = À propos du contrôle RH mensuel
 HrMonthlyCheckSetupPage = Les deux tâches planifiées (le 15 et le 21) sont désactivées par défaut. Activez-les depuis la page des travaux planifiés une fois cette configuration terminée.
-HrMonthlyCheckChannel = Canal du récapitulatif envoyé aux employés
-HrMonthlyCheckEmailAndZulip = Email et Zulip
 HrMonthlyCheckWorkRateField = Attribut supplémentaire utilisateur contenant le taux d'activité
 HrMonthlyCheckByodField = Attribut supplémentaire utilisateur contenant le BYOD
 HrMonthlyCheckUnpaidLeaveTypes = Types de congés comptés comme congés non payés
@@ -62,9 +60,9 @@ HrMonthlyCheckNoAnswer = Pas de réponse
 # Messages
 #
 
-HrMonthlyCheckEmailSubject = Vérification de vos informations RH - %s
 HrMonthlyCheckGreeting = Bonjour %s,
 HrMonthlyCheckIntro = Voici les informations RH que nous avons pour vous pour %s. Merci de les vérifier et de nous signaler toute erreur.
+HrMonthlyCheckMessageIntro = Vos informations RH de %s sont prêtes à être vérifiées. Merci de les consulter dans Dolibarr et de nous signaler toute erreur.
 HrMonthlyCheckConfirmButton = Je confirme que les informations sont correctes
 HrMonthlyCheckChangeButton = Je souhaite une modification
 HrMonthlyCheckHrNotification = Les employés ont répondu au contrôle RH mensuel de %s : %s demande(s) de modification.

@@ -4,9 +4,8 @@ Monthly check of their HR information by the employees, so HR no longer has to c
 
 ## Features
 
-- On the 15th of each month, every active employee receives the recap of their HR information for the month, by email, by Zulip direct message or both:
-  work rate, weekly hours, salary, BYOD, address, unpaid leave of the month, start or end date when it falls in the month, IBAN
-- The message links to a Dolibarr page where the employee confirms the information or describes the change to make. The employee logs in with their own Dolibarr account and can change their answer at any time
+- On the 15th of each month, every active employee receives a Zulip direct message asking them to check their HR information for the month. The message contains no HR information, only links to Dolibarr
+- On the Dolibarr page, the employee sees their information (work rate, weekly hours, salary, BYOD, address, unpaid leave of the month, start or end date when it falls in the month, IBAN), then confirms it or describes the change to make. The employee logs in with their own Dolibarr account and can change their answer at any time
 - On the 21st, a message is posted to the HR Zulip stream with the number of change requests and a link to the answers page
 - The answers page lists, for the chosen month, the change requests, the arrivals and departures, and the recap of all employees with their answer
 
@@ -32,7 +31,6 @@ Monthly check of their HR information by the employees, so HR no longer has to c
 
 In **Setup > Modules > HR Monthly Check**:
 
-- **Channel** of the recap sent to the employees: email, Zulip or both. The email is sent from the Dolibarr sender address (`MAIN_MAIL_EMAIL_FROM`)
 - **Work rate** and **BYOD**: the user extrafields holding them
 - **Unpaid leave types**: the leave types counted as unpaid leave. Only approved leaves are counted
 - **Zulip**: site URL, bot email and API key, HR stream and topic. The API key is stored encrypted
