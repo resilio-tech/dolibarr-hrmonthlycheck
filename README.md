@@ -18,7 +18,7 @@ Monthly check of their HR information by the employees, so HR no longer has to c
 - Dolibarr >= 17.0
 - PHP >= 7.4
 - Leave module enabled in Dolibarr (declared as a module dependency)
-- For Zulip: a bot account on the Zulip organization. The employees are reached on Zulip by the email of their Dolibarr user
+- For Zulip: a bot of type "Incoming webhook" on the Zulip organization. The employees are reached on Zulip by the email of their Dolibarr user
 
 ### Module Installation
 
