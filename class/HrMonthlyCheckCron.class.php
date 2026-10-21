@@ -89,10 +89,12 @@ class HrMonthlyCheckCron
 		foreach ($recaps as $recap) {
 			$name = trim($recap->firstname.' '.$recap->lastname);
 			$recipient = (string) $recap->email;
-			$content = $this->zulipMessage($recap, $period, $url);
+			$content = $this->zulipMessage($recap, $period);
 			if ($testRecipient !== '') {
 				$recipient = $testRecipient;
 				$content = $langs->transnoentities('HrMonthlyCheckTestMessageFor', $name)."\n\n".$content;
+			} else {
+				$content .= "\n\n".$this->answerLinks($url);
 			}
 			if ($recipient === '') {
 				$failures[] = $name.': no email';
@@ -194,19 +196,30 @@ class HrMonthlyCheckCron
 	 *
 	 * @param stdClass $recap       Recap of the employee
 	 * @param string   $period      Period in the YYYYMM format
-	 * @param string   $url         Page where the employee answers
 	 * @return string Zulip Markdown
 	 */
-	private function zulipMessage(stdClass $recap, string $period, string $url): string
+	private function zulipMessage(stdClass $recap, string $period): string
 	{
 		global $langs;
 
 		$content = $langs->transnoentities('HrMonthlyCheckGreeting', $recap->firstname)."\n\n";
 		$content .= $langs->transnoentities('HrMonthlyCheckMessageIntro', hrmonthlycheckPeriodLabel($period, $langs))."\n";
-		$content .= $langs->transnoentities('HrMonthlyCheckAnswerBefore', dol_print_date(hrmonthlycheckHrReviewDate($period), '%d %B %Y', 'gmt', $langs))."\n\n";
-		$content .= '['.$langs->transnoentities('HrMonthlyCheckConfirmButton').']('.$url.'&answer=confirm)';
-		$content .= ' | ['.$langs->transnoentities('HrMonthlyCheckChangeButton').']('.$url.'&answer=change)';
+		$content .= $langs->transnoentities('HrMonthlyCheckAnswerBefore', dol_print_date(hrmonthlycheckHrReviewDate($period), '%d %B %Y', 'gmt', $langs));
 
 		return $content;
+	}
+
+	/**
+	 * Links with which the employee confirms or asks for a change.
+	 *
+	 * @param string $url Page where the employee answers
+	 * @return string Zulip Markdown
+	 */
+	private function answerLinks(string $url): string
+	{
+		global $langs;
+
+		return '['.$langs->transnoentities('HrMonthlyCheckConfirmButton').']('.$url.'&answer=confirm)'
+			.' | ['.$langs->transnoentities('HrMonthlyCheckChangeButton').']('.$url.'&answer=change)';
 	}
 }
