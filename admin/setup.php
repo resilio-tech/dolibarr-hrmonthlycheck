@@ -55,7 +55,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 require_once DOL_DOCUMENT_ROOT.'/holiday/class/holiday.class.php';
 require_once '../lib/hrmonthlycheck.lib.php';
 
-$langs->loadLangs(array('admin', 'holiday', 'hrmonthlycheck@hrmonthlycheck'));
+$langs->loadLangs(array('admin', 'errors', 'holiday', 'hrmonthlycheck@hrmonthlycheck'));
 
 if (!$user->admin) {
 	accessforbidden();
@@ -70,6 +70,9 @@ $backtopage = GETPOST('backtopage', 'alpha');
  */
 
 if ($action == 'update') {
+	$testMode = (int) GETPOST('test_mode', 'int');
+	$testRecipient = GETPOST('test_recipient', 'alphanohtml');
+	$testSetupValid = !$testMode || isValidEmail($testRecipient);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_WORKRATE_FIELD', GETPOST('workrate_field', 'aZ09'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_BYOD_FIELD', GETPOST('byod_field', 'aZ09'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_UNPAID_LEAVE_TYPES', implode(',', array_map('intval', GETPOST('unpaid_leave_types', 'array:int'))), 'chaine', 0, '', $conf->entity);
@@ -77,11 +80,19 @@ if ($action == 'update') {
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_ZULIP_BOT_EMAIL', GETPOST('zulip_email', 'alphanohtml'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_ZULIP_HR_STREAM', GETPOST('zulip_stream', 'alphanohtml'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_ZULIP_HR_TOPIC', GETPOST('zulip_topic', 'alphanohtml'), 'chaine', 0, '', $conf->entity);
+	if ($testSetupValid) {
+		dolibarr_set_const($db, 'HRMONTHLYCHECK_TEST_MODE', $testMode, 'chaine', 0, '', $conf->entity);
+		dolibarr_set_const($db, 'HRMONTHLYCHECK_TEST_RECIPIENT', $testRecipient, 'chaine', 0, '', $conf->entity);
+	}
 	$apikey = trim((string) GETPOST('zulip_apikey', 'none'));
 	if ($apikey !== '') {
 		dolibarr_set_const($db, 'HRMONTHLYCHECK_ZULIP_BOT_APIKEY', dolEncrypt($apikey), 'chaine', 0, '', $conf->entity);
 	}
-	setEventMessages($langs->trans("RecordSaved"), null, 'mesgs');
+	if ($testSetupValid) {
+		setEventMessages($langs->trans("RecordSaved"), null, 'mesgs');
+	} else {
+		setEventMessages($langs->trans('ErrorBadEMail', $testRecipient), null, 'errors');
+	}
 }
 
 
@@ -147,6 +158,14 @@ print '<td><input type="text" name="zulip_stream" class="minwidth300" value="'.d
 
 print '<tr class="oddeven"><td>'.$langs->trans("HrMonthlyCheckZulipHrTopic").'</td>';
 print '<td><input type="text" name="zulip_topic" class="minwidth300" value="'.dol_escape_htmltag(getDolGlobalString('HRMONTHLYCHECK_ZULIP_HR_TOPIC')).'" placeholder="HR monthly check"></td></tr>';
+
+print '<tr class="liste_titre"><td colspan="2">'.$langs->trans("HrMonthlyCheckTestSetup").'</td></tr>';
+
+print '<tr class="oddeven"><td>'.$langs->trans("HrMonthlyCheckTestMode").'</td>';
+print '<td>'.$form->selectyesno('test_mode', getDolGlobalInt('HRMONTHLYCHECK_TEST_MODE'), 1).'</td></tr>';
+
+print '<tr class="oddeven"><td>'.$langs->trans("HrMonthlyCheckTestRecipient").'</td>';
+print '<td><input type="text" name="test_recipient" class="minwidth300" value="'.dol_escape_htmltag(getDolGlobalString('HRMONTHLYCHECK_TEST_RECIPIENT')).'"></td></tr>';
 
 print '</table>';
 print '<div class="center" style="margin-top:10px">';

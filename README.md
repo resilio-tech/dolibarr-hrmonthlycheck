@@ -4,9 +4,9 @@ Monthly check of their HR information by the employees, so HR no longer has to c
 
 ## Features
 
-- On the 15th of each month, every active employee receives a Zulip direct message asking them to check their HR information for the month. The message contains no HR information, only links to Dolibarr
+- On the 15th of each month, every active employee receives a Zulip direct message asking them to check their HR information for the month before the 21st, the day HR reviews the answers. The message contains no HR information, only links to Dolibarr
 - On the Dolibarr page, the employee sees their information (work rate, weekly hours, salary, BYOD, address, unpaid leave of the month, start or end date when it falls in the month, IBAN), then confirms it or describes the change to make. The employee logs in with their own Dolibarr account and can change their answer at any time
-- On the 21st, a message is posted to the HR Zulip stream with the number of change requests and a link to the answers page
+- On the 21st, a message is posted to the HR Zulip stream with the number of confirmations, change requests and employees without answer, and a link to the answers page
 - The answers page lists, for the chosen month, the change requests, the arrivals and departures, and the recap of all employees with their answer
 
 ---
@@ -18,7 +18,7 @@ Monthly check of their HR information by the employees, so HR no longer has to c
 - Dolibarr >= 17.0
 - PHP >= 7.4
 - Leave module enabled in Dolibarr (declared as a module dependency)
-- For Zulip: a bot account on the Zulip organization. The employees are reached on Zulip by the email of their Dolibarr user
+- For Zulip: a bot of type "Incoming webhook" on the Zulip organization. The employees are reached on Zulip by the email of their Dolibarr user
 
 ### Module Installation
 
@@ -34,6 +34,7 @@ In **Setup > Modules > HR Monthly Check**:
 - **Work rate** and **BYOD**: the user extrafields holding them
 - **Unpaid leave types**: the leave types counted as unpaid leave. Only approved leaves are counted
 - **Zulip**: site URL, bot email and API key, HR stream and topic. The API key is stored encrypted
+- **Test mode**: while it is on, every message (one per employee and the HR notification) is sent as a direct message to the test recipient only, without the confirm and change links of the employee message, so the scheduled jobs can be run by hand without reaching the employees
 
 The two scheduled jobs are disabled by default. Enable them in **Setup > Scheduled jobs** once the setup is complete:
 

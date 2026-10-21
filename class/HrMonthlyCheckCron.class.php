@@ -69,6 +69,10 @@ class HrMonthlyCheckCron
 			$this->error = 'Zulip is not configured';
 			return -1;
 		}
+		$testRecipient = $this->testRecipient();
+		if ($testRecipient === null) {
+			return -1;
+		}
 
 		$period = hrmonthlycheckCurrentPeriod();
 		$loader = new HrMonthlyCheckRecap($this->db);
@@ -78,7 +82,6 @@ class HrMonthlyCheckCron
 			return -1;
 		}
 
-		$periodLabel = hrmonthlycheckPeriodLabel($period, $langs);
 		$url = dol_buildpath('/hrmonthlycheck/mycheck.php', 3).'?period='.$period;
 
 		$sent = 0;
@@ -90,7 +93,15 @@ class HrMonthlyCheckCron
 				continue;
 			}
 
-			if (!$notifier->sendDirect($recap->email, $this->zulipMessage($recap, $periodLabel, $url))) {
+			$recipient = $recap->email;
+			$content = $this->zulipMessage($recap, $period);
+			if ($testRecipient !== '') {
+				$recipient = $testRecipient;
+				$content = $langs->transnoentities('HrMonthlyCheckTestMessageFor', $name)."\n\n".$content;
+			} else {
+				$content .= "\n\n".$this->answerLinks($url);
+			}
+			if (!$notifier->sendDirect($recipient, $content)) {
 				$failures[] = $name.': '.$notifier->getError();
 				continue;
 			}
@@ -125,21 +136,36 @@ class HrMonthlyCheckCron
 			$this->error = 'Zulip is not configured';
 			return -1;
 		}
-
-		$period = hrmonthlycheckCurrentPeriod();
-		$answer = new HrMonthlyCheckAnswer($this->db);
-		$nbChanges = $answer->countChangeRequests($period);
-		if ($nbChanges < 0) {
-			$this->error = $answer->error;
+		$testRecipient = $this->testRecipient();
+		if ($testRecipient === null) {
+			return -1;
+		}
+		$stream = getDolGlobalString('HRMONTHLYCHECK_ZULIP_HR_STREAM');
+		if ($stream === '') {
+			$this->error = 'Zulip stream is empty';
 			return -1;
 		}
 
+		$period = hrmonthlycheckCurrentPeriod();
+		$loader = new HrMonthlyCheckRecap($this->db);
+		$recaps = $loader->fetchAll($period);
+		if ($recaps === null) {
+			$this->error = $loader->error;
+			return -1;
+		}
+		$counts = hrmonthlycheckCountAnswers($recaps);
+
 		$url = dol_buildpath('/hrmonthlycheck/answers.php', 3).'?period='.$period;
-		$this->output = $langs->transnoentities('HrMonthlyCheckHrNotification', hrmonthlycheckPeriodLabel($period, $langs), $nbChanges);
+		$this->output = $langs->transnoentities('HrMonthlyCheckHrNotification', hrmonthlycheckPeriodLabel($period, $langs), $counts['confirmed'], $counts['changes'], $counts['none']);
 		$this->output .= "\n\n[".$langs->transnoentities('HrMonthlyCheckSeeAnswers').']('.$url.')';
 
 		$topic = getDolGlobalString('HRMONTHLYCHECK_ZULIP_HR_TOPIC') ?: 'HR monthly check';
-		if (!$notifier->sendStream(getDolGlobalString('HRMONTHLYCHECK_ZULIP_HR_STREAM'), $topic, $this->output)) {
+		if ($testRecipient !== '') {
+			$sent = $notifier->sendDirect($testRecipient, $langs->transnoentities('HrMonthlyCheckTestMessageFor', '#'.$stream.' > '.$topic)."\n\n".$this->output);
+		} else {
+			$sent = $notifier->sendStream($stream, $topic, $this->output);
+		}
+		if (!$sent) {
 			$this->error = $notifier->getError();
 			return -1;
 		}
@@ -148,22 +174,53 @@ class HrMonthlyCheckCron
 	}
 
 	/**
+	 * Zulip email of the test recipient, empty when test mode is off.
+	 *
+	 * @return string|null Null when test mode is on without a recipient
+	 */
+	private function testRecipient(): ?string
+	{
+		if (!getDolGlobalInt('HRMONTHLYCHECK_TEST_MODE')) {
+			return '';
+		}
+		$recipient = getDolGlobalString('HRMONTHLYCHECK_TEST_RECIPIENT');
+		if ($recipient === '') {
+			$this->error = 'Test mode is on but no test recipient is configured';
+			return null;
+		}
+
+		return $recipient;
+	}
+
+	/**
 	 * Zulip message sent to an employee.
 	 *
 	 * @param stdClass $recap       Recap of the employee
-	 * @param string   $periodLabel Month and year
-	 * @param string   $url         Page where the employee answers
+	 * @param string   $period      Period in the YYYYMM format
 	 * @return string Zulip Markdown
 	 */
-	private function zulipMessage(stdClass $recap, string $periodLabel, string $url): string
+	private function zulipMessage(stdClass $recap, string $period): string
 	{
 		global $langs;
 
 		$content = $langs->transnoentities('HrMonthlyCheckGreeting', $recap->firstname)."\n\n";
-		$content .= $langs->transnoentities('HrMonthlyCheckMessageIntro', $periodLabel)."\n\n";
-		$content .= '['.$langs->transnoentities('HrMonthlyCheckConfirmButton').']('.$url.'&answer=confirm)';
-		$content .= ' | ['.$langs->transnoentities('HrMonthlyCheckChangeButton').']('.$url.'&answer=change)';
+		$content .= $langs->transnoentities('HrMonthlyCheckMessageIntro', hrmonthlycheckPeriodLabel($period, $langs))."\n";
+		$content .= $langs->transnoentities('HrMonthlyCheckAnswerBefore', dol_print_date(hrmonthlycheckHrReviewDate($period), '%d %B %Y', 'gmt', $langs));
 
 		return $content;
+	}
+
+	/**
+	 * Links with which the employee confirms or asks for a change.
+	 *
+	 * @param string $url Page where the employee answers
+	 * @return string Zulip Markdown
+	 */
+	private function answerLinks(string $url): string
+	{
+		global $langs;
+
+		return '['.$langs->transnoentities('HrMonthlyCheckConfirmButton').']('.$url.'&answer=confirm)'
+			.' | ['.$langs->transnoentities('HrMonthlyCheckChangeButton').']('.$url.'&answer=change)';
 	}
 }

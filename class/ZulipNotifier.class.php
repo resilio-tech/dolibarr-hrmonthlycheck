@@ -85,11 +85,6 @@ class ZulipNotifier
 	 */
 	public function sendStream(string $stream, string $topic, string $content): bool
 	{
-		if ($stream === '') {
-			$this->error = 'Zulip stream is empty';
-			return false;
-		}
-
 		return $this->post(array('type' => 'stream', 'to' => $stream, 'topic' => $topic, 'content' => $content));
 	}
 

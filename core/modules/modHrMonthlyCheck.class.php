@@ -25,6 +25,7 @@
  */
 include_once DOL_DOCUMENT_ROOT.'/core/modules/DolibarrModules.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
+require_once __DIR__.'/../../lib/hrmonthlycheck.lib.php';
 
 /**
  *  Description and activation class for module HrMonthlyCheck
@@ -103,8 +104,8 @@ class modHrMonthlyCheck extends DolibarrModules
 
 		$this->boxes = array();
 
-		$employeeStart = $this->nextMonthlyRun(15);
-		$hrStart = $this->nextMonthlyRun(21);
+		$employeeStart = $this->nextMonthlyRun(HRMONTHLYCHECK_EMPLOYEE_CHECK_DAY);
+		$hrStart = $this->nextMonthlyRun(HRMONTHLYCHECK_HR_REVIEW_DAY);
 		$this->cronjobs = array(
 			0 => array(
 				'label' => 'HR monthly check: send the recap to employees',

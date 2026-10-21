@@ -22,6 +22,7 @@
  */
 
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/security.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 require_once DOL_DOCUMENT_ROOT.'/holiday/class/holiday.class.php';
 require_once __DIR__.'/../lib/hrmonthlycheck.lib.php';
@@ -93,7 +94,7 @@ class HrMonthlyCheckRecap
 
 		$sql = "SELECT u.rowid, u.firstname, u.lastname, u.email, u.salary, u.weeklyhours, u.dateemployment, u.dateemploymentend,";
 		$sql .= " u.address, u.zip, u.town, d.nom as state, d.code_departement as state_code, c.code as country_code, c.label as country,";
-		$sql .= " rib.iban_prefix as iban, a.status as answer_status, a.note as answer_note, a.date_answer";
+		$sql .= " a.status as answer_status, a.note as answer_note, a.date_answer";
 		if ($this->workrateField !== '') {
 			$sql .= ", ue.".$this->workrateField." as workrate";
 		}
@@ -104,7 +105,6 @@ class HrMonthlyCheckRecap
 		$sql .= " LEFT JOIN ".$this->db->prefix()."c_departements as d ON d.rowid = u.fk_state";
 		$sql .= " LEFT JOIN ".$this->db->prefix()."c_country as c ON c.rowid = u.fk_country";
 		$sql .= " LEFT JOIN ".$this->db->prefix()."user_extrafields as ue ON ue.fk_object = u.rowid";
-		$sql .= " LEFT JOIN ".$this->db->prefix()."user_rib as rib ON rib.fk_user = u.rowid";
 		$sql .= " LEFT JOIN ".$this->db->prefix()."hrmonthlycheck_answer as a ON a.fk_user = u.rowid";
 		$sql .= " AND a.entity = ".((int) $conf->entity)." AND a.yearmonth = '".$this->db->escape($period)."'";
 		$sql .= " WHERE u.entity IN (".getEntity('user').")";
@@ -114,7 +114,7 @@ class HrMonthlyCheckRecap
 		if ($userId > 0) {
 			$sql .= " AND u.rowid = ".((int) $userId);
 		}
-		$sql .= " ORDER BY u.lastname, u.firstname, u.rowid, rib.rowid";
+		$sql .= " ORDER BY u.lastname, u.firstname, u.rowid";
 
 		$resql = $this->db->query($sql);
 		if (!$resql) {
@@ -124,9 +124,6 @@ class HrMonthlyCheckRecap
 
 		$recaps = array();
 		while ($obj = $this->db->fetch_object($resql)) {
-			if (isset($recaps[(int) $obj->rowid])) {
-				continue;
-			}
 			$obj->id = (int) $obj->rowid;
 			$obj->datestart = $this->db->jdate($obj->dateemployment, 1);
 			$obj->dateend = $this->db->jdate($obj->dateemploymentend, 1);
@@ -134,11 +131,12 @@ class HrMonthlyCheckRecap
 			$obj->ends_in_period = $obj->dateend && $obj->dateend >= $periodStart && $obj->dateend <= $periodEnd;
 			$obj->date_answer = $this->db->jdate($obj->date_answer);
 			$obj->leaves = array();
+			$obj->ibans = array();
 			$recaps[$obj->id] = $obj;
 		}
 		$this->db->free($resql);
 
-		if (!$this->loadUnpaidLeaves($recaps, $firstDay, $lastDay, $periodStart, $periodEnd)) {
+		if (!$this->loadUnpaidLeaves($recaps, $firstDay, $lastDay, $periodStart, $periodEnd) || !$this->loadIbans($recaps)) {
 			return null;
 		}
 
@@ -188,6 +186,40 @@ class HrMonthlyCheckRecap
 			);
 			$leave['days'] = num_open_day($leave['start'], $leave['end'], 0, 1, $leave['halfday'], '', (int) $obj->fk_user);
 			$recaps[(int) $obj->fk_user]->leaves[] = $leave;
+		}
+		$this->db->free($resql);
+
+		return true;
+	}
+
+	/**
+	 * Add to each recap the IBANs of all its bank accounts.
+	 *
+	 * @param array<int,stdClass> $recaps Recaps keyed by user id
+	 * @return bool False on error
+	 */
+	private function loadIbans(array $recaps): bool
+	{
+		if (empty($recaps)) {
+			return true;
+		}
+
+		$sql = "SELECT rib.fk_user, rib.iban_prefix as iban";
+		$sql .= " FROM ".$this->db->prefix()."user_rib as rib";
+		$sql .= " WHERE rib.fk_user IN (".$this->db->sanitize(implode(',', array_keys($recaps))).")";
+		$sql .= " ORDER BY rib.rowid";
+
+		$resql = $this->db->query($sql);
+		if (!$resql) {
+			$this->error = $this->db->lasterror();
+			return false;
+		}
+
+		while ($obj = $this->db->fetch_object($resql)) {
+			$iban = dolDecrypt((string) $obj->iban);
+			if ($iban !== '') {
+				$recaps[(int) $obj->fk_user]->ibans[] = $iban;
+			}
 		}
 		$this->db->free($resql);
 
@@ -247,7 +279,7 @@ class HrMonthlyCheckRecap
 		$values['unpaidleave'] = $this->leavesText($recap->leaves, $outputlangs);
 		$values['datestart'] = $recap->starts_in_period ? dol_print_date($recap->datestart, 'day', 'gmt', $outputlangs) : '';
 		$values['dateend'] = $recap->ends_in_period ? dol_print_date($recap->dateend, 'day', 'gmt', $outputlangs) : '';
-		$values['iban'] = (string) $recap->iban;
+		$values['iban'] = implode(', ', $recap->ibans);
 
 		return array_map('dol_string_nohtmltag', $values);
 	}

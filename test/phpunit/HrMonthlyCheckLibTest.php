@@ -51,6 +51,21 @@ class HrMonthlyCheckLibTest extends TestCase
 	/**
 	 * @return void
 	 */
+	public function testAnswersAreCountedByStatus(): void
+	{
+		$recaps = array(
+			(object) array('answer_status' => '1'),
+			(object) array('answer_status' => '1'),
+			(object) array('answer_status' => '2'),
+			(object) array('answer_status' => null),
+		);
+
+		$this->assertSame(array('confirmed' => 2, 'changes' => 1, 'none' => 1), hrmonthlycheckCountAnswers($recaps));
+	}
+
+	/**
+	 * @return void
+	 */
 	public function testLeaveInsideThePeriodKeepsItsHalfDays()
 	{
 		$leave = hrmonthlycheckClipLeave(self::SEP_01 + 2 * self::DAY, self::SEP_01 + 4 * self::DAY, 2, self::SEP_01, self::SEP_30);

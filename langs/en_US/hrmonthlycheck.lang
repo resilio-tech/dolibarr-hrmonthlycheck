@@ -34,11 +34,14 @@ HrMonthlyCheckByodField = User extrafield holding BYOD
 HrMonthlyCheckUnpaidLeaveTypes = Leave types counted as unpaid leave
 HrMonthlyCheckZulipSetup = Zulip (direct messages to the employees and HR notification)
 HrMonthlyCheckZulipSite = Zulip site URL
-HrMonthlyCheckZulipBotEmail = Bot email
-HrMonthlyCheckZulipApiKey = Bot API key
+HrMonthlyCheckZulipBotEmail = Email of the incoming webhook bot
+HrMonthlyCheckZulipApiKey = API key of the incoming webhook bot
 HrMonthlyCheckZulipHrStream = HR stream
 HrMonthlyCheckZulipHrTopic = HR topic
 HrMonthlyCheckKeepCurrentSecret = Leave empty to keep the current value
+HrMonthlyCheckTestSetup = Test mode
+HrMonthlyCheckTestMode = Send every message to the test recipient instead of the employees and HR
+HrMonthlyCheckTestRecipient = Zulip email of the test recipient
 
 #
 # Recap
@@ -63,10 +66,12 @@ HrMonthlyCheckNoAnswer = No answer
 HrMonthlyCheckGreeting = Hello %s,
 HrMonthlyCheckIntro = Here is the HR information we have for you for %s. Please check it and tell us if something is wrong.
 HrMonthlyCheckMessageIntro = Your HR information for %s is ready to be checked. Please open it in Dolibarr and tell us if something is wrong.
+HrMonthlyCheckAnswerBefore = Please answer before **%s**, the day HR reviews the answers.
 HrMonthlyCheckConfirmButton = I confirm the information is correct
 HrMonthlyCheckChangeButton = I want to make a change
-HrMonthlyCheckHrNotification = The employees have answered the HR monthly check of %s: %s change request(s).
+HrMonthlyCheckHrNotification = HR monthly check for %s: %s confirmation(s), %s change request(s), %s without answer.
 HrMonthlyCheckSeeAnswers = See the answers in Dolibarr
+HrMonthlyCheckTestMessageFor = **[TEST]** Message for %s
 
 #
 # Pages
