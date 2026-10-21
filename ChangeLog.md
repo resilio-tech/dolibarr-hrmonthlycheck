@@ -1,6 +1,6 @@
 # CHANGELOG HRMONTHLYCHECK FOR [DOLIBARR ERP CRM](https://www.dolibarr.org)
 
-## 1.1.0 (unreleased)
+## 1.1.0 (2026-10-21)
 
 ### New Features
 - Tell the employees in the message that HR reviews the answers on the 21st
