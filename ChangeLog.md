@@ -6,6 +6,8 @@
 - Ask every employee on Zulip, on the 15th of each month, to check their HR information in Dolibarr, with a link to confirm it or ask for a change
 - Notify HR on Zulip on the 21st with the number of change requests and a link to the answers
 - Answers page listing the change requests, the arrivals and departures and the recap of all employees for a month
+- Test mode sending every message to a test recipient instead of the employees and HR, to run the scheduled jobs by hand
+- Show every IBAN of the employee, the default one first, decrypted when Dolibarr stores it encrypted
 
 ### Tests
-- `HrMonthlyCheckLibTest.php` - period validation and clipping of the unpaid leaves to the month
+- `HrMonthlyCheckLibTest.php` - period validation, clipping of the unpaid leaves to the month and test recipient

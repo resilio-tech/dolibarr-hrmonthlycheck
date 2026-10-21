@@ -39,6 +39,9 @@ HrMonthlyCheckZulipApiKey = Clé API du bot
 HrMonthlyCheckZulipHrStream = Stream RH
 HrMonthlyCheckZulipHrTopic = Topic RH
 HrMonthlyCheckKeepCurrentSecret = Laisser vide pour conserver la valeur actuelle
+HrMonthlyCheckTestSetup = Mode test
+HrMonthlyCheckTestMode = Envoyer tous les messages au destinataire de test au lieu des employés et des RH
+HrMonthlyCheckTestRecipient = Email Zulip du destinataire de test
 
 #
 # Recap
@@ -67,6 +70,7 @@ HrMonthlyCheckConfirmButton = Je confirme que les informations sont correctes
 HrMonthlyCheckChangeButton = Je souhaite une modification
 HrMonthlyCheckHrNotification = Les employés ont répondu au contrôle RH mensuel de %s : %s demande(s) de modification.
 HrMonthlyCheckSeeAnswers = Voir les réponses dans Dolibarr
+HrMonthlyCheckTestMessageFor = **[TEST]** Message pour %s
 
 #
 # Pages

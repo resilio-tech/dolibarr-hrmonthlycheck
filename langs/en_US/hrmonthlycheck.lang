@@ -39,6 +39,9 @@ HrMonthlyCheckZulipApiKey = Bot API key
 HrMonthlyCheckZulipHrStream = HR stream
 HrMonthlyCheckZulipHrTopic = HR topic
 HrMonthlyCheckKeepCurrentSecret = Leave empty to keep the current value
+HrMonthlyCheckTestSetup = Test mode
+HrMonthlyCheckTestMode = Send every message to the test recipient instead of the employees and HR
+HrMonthlyCheckTestRecipient = Zulip email of the test recipient
 
 #
 # Recap
@@ -67,6 +70,7 @@ HrMonthlyCheckConfirmButton = I confirm the information is correct
 HrMonthlyCheckChangeButton = I want to make a change
 HrMonthlyCheckHrNotification = The employees have answered the HR monthly check of %s: %s change request(s).
 HrMonthlyCheckSeeAnswers = See the answers in Dolibarr
+HrMonthlyCheckTestMessageFor = **[TEST]** Message for %s
 
 #
 # Pages

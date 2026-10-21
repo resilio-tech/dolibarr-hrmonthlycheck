@@ -34,6 +34,7 @@ In **Setup > Modules > HR Monthly Check**:
 - **Work rate** and **BYOD**: the user extrafields holding them
 - **Unpaid leave types**: the leave types counted as unpaid leave. Only approved leaves are counted
 - **Zulip**: site URL, bot email and API key, HR stream and topic. The API key is stored encrypted
+- **Test mode**: while it is on, every message (one per employee and the HR notification) is sent as a direct message to the test recipient only, so the scheduled jobs can be run by hand without reaching the employees
 
 The two scheduled jobs are disabled by default. Enable them in **Setup > Scheduled jobs** once the setup is complete:
 

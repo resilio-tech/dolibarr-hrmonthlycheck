@@ -69,6 +69,10 @@ class HrMonthlyCheckCron
 			$this->error = 'Zulip is not configured';
 			return -1;
 		}
+		$testRecipient = $this->testRecipient();
+		if ($testRecipient === null) {
+			return -1;
+		}
 
 		$period = hrmonthlycheckCurrentPeriod();
 		$loader = new HrMonthlyCheckRecap($this->db);
@@ -90,7 +94,11 @@ class HrMonthlyCheckCron
 				continue;
 			}
 
-			if (!$notifier->sendDirect($recap->email, $this->zulipMessage($recap, $periodLabel, $url))) {
+			$content = $this->zulipMessage($recap, $periodLabel, $url);
+			if ($testRecipient !== '') {
+				$content = $langs->transnoentities('HrMonthlyCheckTestMessageFor', $name)."\n\n".$content;
+			}
+			if (!$notifier->sendDirect(hrmonthlycheckRecipient($recap->email, $testRecipient), $content)) {
 				$failures[] = $name.': '.$notifier->getError();
 				continue;
 			}
@@ -125,6 +133,10 @@ class HrMonthlyCheckCron
 			$this->error = 'Zulip is not configured';
 			return -1;
 		}
+		$testRecipient = $this->testRecipient();
+		if ($testRecipient === null) {
+			return -1;
+		}
 
 		$period = hrmonthlycheckCurrentPeriod();
 		$answer = new HrMonthlyCheckAnswer($this->db);
@@ -139,12 +151,36 @@ class HrMonthlyCheckCron
 		$this->output .= "\n\n[".$langs->transnoentities('HrMonthlyCheckSeeAnswers').']('.$url.')';
 
 		$topic = getDolGlobalString('HRMONTHLYCHECK_ZULIP_HR_TOPIC') ?: 'HR monthly check';
-		if (!$notifier->sendStream(getDolGlobalString('HRMONTHLYCHECK_ZULIP_HR_STREAM'), $topic, $this->output)) {
+		if ($testRecipient !== '') {
+			$sent = $notifier->sendDirect($testRecipient, $langs->transnoentities('HrMonthlyCheckTestMessageFor', 'HR')."\n\n".$this->output);
+		} else {
+			$sent = $notifier->sendStream(getDolGlobalString('HRMONTHLYCHECK_ZULIP_HR_STREAM'), $topic, $this->output);
+		}
+		if (!$sent) {
 			$this->error = $notifier->getError();
 			return -1;
 		}
 
 		return 0;
+	}
+
+	/**
+	 * Zulip email of the test recipient, empty when test mode is off.
+	 *
+	 * @return string|null Null when test mode is on without a recipient
+	 */
+	private function testRecipient(): ?string
+	{
+		if (!getDolGlobalInt('HRMONTHLYCHECK_TEST_MODE')) {
+			return '';
+		}
+		$recipient = getDolGlobalString('HRMONTHLYCHECK_TEST_RECIPIENT');
+		if ($recipient === '') {
+			$this->error = 'Test mode is on but no test recipient is configured';
+			return null;
+		}
+
+		return $recipient;
 	}
 
 	/**
