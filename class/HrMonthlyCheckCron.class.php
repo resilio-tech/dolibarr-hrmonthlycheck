@@ -89,16 +89,17 @@ class HrMonthlyCheckCron
 		$failures = array();
 		foreach ($recaps as $recap) {
 			$name = trim($recap->firstname.' '.$recap->lastname);
-			if ((string) $recap->email === '') {
+			$recipient = (string) $recap->email;
+			$content = $this->zulipMessage($recap, $periodLabel, $url);
+			if ($testRecipient !== '') {
+				$recipient = $testRecipient;
+				$content = $langs->transnoentities('HrMonthlyCheckTestMessageFor', $name)."\n\n".$content;
+			}
+			if ($recipient === '') {
 				$failures[] = $name.': no email';
 				continue;
 			}
-
-			$content = $this->zulipMessage($recap, $periodLabel, $url);
-			if ($testRecipient !== '') {
-				$content = $langs->transnoentities('HrMonthlyCheckTestMessageFor', $name)."\n\n".$content;
-			}
-			if (!$notifier->sendDirect(hrmonthlycheckRecipient($recap->email, $testRecipient), $content)) {
+			if (!$notifier->sendDirect($recipient, $content)) {
 				$failures[] = $name.': '.$notifier->getError();
 				continue;
 			}

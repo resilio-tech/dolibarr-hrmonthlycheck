@@ -51,15 +51,6 @@ class HrMonthlyCheckLibTest extends TestCase
 	/**
 	 * @return void
 	 */
-	public function testTestRecipientReplacesTheIntendedOne(): void
-	{
-		$this->assertSame('tester@example.com', hrmonthlycheckRecipient('employee@example.com', 'tester@example.com'));
-		$this->assertSame('employee@example.com', hrmonthlycheckRecipient('employee@example.com', ''));
-	}
-
-	/**
-	 * @return void
-	 */
 	public function testLeaveInsideThePeriodKeepsItsHalfDays()
 	{
 		$leave = hrmonthlycheckClipLeave(self::SEP_01 + 2 * self::DAY, self::SEP_01 + 4 * self::DAY, 2, self::SEP_01, self::SEP_30);

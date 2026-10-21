@@ -11,4 +11,4 @@
 - Show every IBAN of the employee, decrypted when Dolibarr stores it encrypted
 
 ### Tests
-- `HrMonthlyCheckLibTest.php` - period validation, clipping of the unpaid leaves to the month and test recipient
+- `HrMonthlyCheckLibTest.php` - period validation, clipping of the unpaid leaves to the month

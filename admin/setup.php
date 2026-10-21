@@ -69,14 +69,13 @@ $backtopage = GETPOST('backtopage', 'alpha');
  * Actions
  */
 
-$testMode = GETPOSTINT('test_mode');
-$testRecipient = GETPOST('test_recipient', 'alphanohtml');
-if ($action == 'update' && $testMode && !isValidEmail($testRecipient)) {
-	setEventMessages($langs->trans('ErrorBadEMail', $testRecipient), null, 'errors');
-	$action = '';
-}
-
 if ($action == 'update') {
+	$testMode = (int) GETPOST('test_mode', 'int');
+	$testRecipient = GETPOST('test_recipient', 'alphanohtml');
+	if ($testMode && !isValidEmail($testRecipient)) {
+		setEventMessages($langs->trans('ErrorBadEMail', $testRecipient), null, 'errors');
+		$testMode = 0;
+	}
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_WORKRATE_FIELD', GETPOST('workrate_field', 'aZ09'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_BYOD_FIELD', GETPOST('byod_field', 'aZ09'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_UNPAID_LEAVE_TYPES', implode(',', array_map('intval', GETPOST('unpaid_leave_types', 'array:int'))), 'chaine', 0, '', $conf->entity);

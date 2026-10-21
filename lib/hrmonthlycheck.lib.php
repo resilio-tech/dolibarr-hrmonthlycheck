@@ -162,18 +162,6 @@ function hrmonthlycheckPeriodLabel($period, $outputlangs)
 }
 
 /**
- * Zulip email a message is sent to: the test recipient when test mode is on, otherwise the intended one.
- *
- * @param string $intended      Zulip email of the intended recipient
- * @param string $testRecipient Zulip email of the test recipient, empty when test mode is off
- * @return string
- */
-function hrmonthlycheckRecipient(string $intended, string $testRecipient): string
-{
-	return $testRecipient !== '' ? $testRecipient : $intended;
-}
-
-/**
  * Restrict a leave to a period.
  *
  * @param int $start       First day of the leave (midnight GMT)
