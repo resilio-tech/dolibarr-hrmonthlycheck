@@ -104,7 +104,7 @@ class modHrMonthlyCheck extends DolibarrModules
 
 		$this->boxes = array();
 
-		$employeeStart = $this->nextMonthlyRun(15);
+		$employeeStart = $this->nextMonthlyRun(HRMONTHLYCHECK_EMPLOYEE_CHECK_DAY);
 		$hrStart = $this->nextMonthlyRun(HRMONTHLYCHECK_HR_REVIEW_DAY);
 		$this->cronjobs = array(
 			0 => array(

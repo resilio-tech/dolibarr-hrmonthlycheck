@@ -72,10 +72,7 @@ $backtopage = GETPOST('backtopage', 'alpha');
 if ($action == 'update') {
 	$testMode = (int) GETPOST('test_mode', 'int');
 	$testRecipient = GETPOST('test_recipient', 'alphanohtml');
-	if ($testMode && !isValidEmail($testRecipient)) {
-		setEventMessages($langs->trans('ErrorBadEMail', $testRecipient), null, 'errors');
-		$testMode = 0;
-	}
+	$testSetupValid = !$testMode || isValidEmail($testRecipient);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_WORKRATE_FIELD', GETPOST('workrate_field', 'aZ09'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_BYOD_FIELD', GETPOST('byod_field', 'aZ09'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_UNPAID_LEAVE_TYPES', implode(',', array_map('intval', GETPOST('unpaid_leave_types', 'array:int'))), 'chaine', 0, '', $conf->entity);
@@ -83,13 +80,19 @@ if ($action == 'update') {
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_ZULIP_BOT_EMAIL', GETPOST('zulip_email', 'alphanohtml'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_ZULIP_HR_STREAM', GETPOST('zulip_stream', 'alphanohtml'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_ZULIP_HR_TOPIC', GETPOST('zulip_topic', 'alphanohtml'), 'chaine', 0, '', $conf->entity);
-	dolibarr_set_const($db, 'HRMONTHLYCHECK_TEST_MODE', $testMode, 'chaine', 0, '', $conf->entity);
-	dolibarr_set_const($db, 'HRMONTHLYCHECK_TEST_RECIPIENT', $testRecipient, 'chaine', 0, '', $conf->entity);
+	if ($testSetupValid) {
+		dolibarr_set_const($db, 'HRMONTHLYCHECK_TEST_MODE', $testMode, 'chaine', 0, '', $conf->entity);
+		dolibarr_set_const($db, 'HRMONTHLYCHECK_TEST_RECIPIENT', $testRecipient, 'chaine', 0, '', $conf->entity);
+	}
 	$apikey = trim((string) GETPOST('zulip_apikey', 'none'));
 	if ($apikey !== '') {
 		dolibarr_set_const($db, 'HRMONTHLYCHECK_ZULIP_BOT_APIKEY', dolEncrypt($apikey), 'chaine', 0, '', $conf->entity);
 	}
-	setEventMessages($langs->trans("RecordSaved"), null, 'mesgs');
+	if ($testSetupValid) {
+		setEventMessages($langs->trans("RecordSaved"), null, 'mesgs');
+	} else {
+		setEventMessages($langs->trans('ErrorBadEMail', $testRecipient), null, 'errors');
+	}
 }
 
 

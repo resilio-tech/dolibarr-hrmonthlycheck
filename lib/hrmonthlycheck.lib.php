@@ -21,6 +21,9 @@
  * \brief   Library files with common functions for HrMonthlyCheck
  */
 
+require_once __DIR__.'/../class/HrMonthlyCheckAnswer.class.php';
+
+const HRMONTHLYCHECK_EMPLOYEE_CHECK_DAY = 15;
 const HRMONTHLYCHECK_HR_REVIEW_DAY = 21;
 
 /**

@@ -24,7 +24,6 @@
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(__FILE__).'/../../lib/hrmonthlycheck.lib.php';
-require_once dirname(__FILE__).'/../../class/HrMonthlyCheckAnswer.class.php';
 
 /**
  * Class HrMonthlyCheckLibTest

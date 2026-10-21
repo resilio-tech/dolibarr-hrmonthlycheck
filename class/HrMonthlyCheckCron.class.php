@@ -88,17 +88,18 @@ class HrMonthlyCheckCron
 		$failures = array();
 		foreach ($recaps as $recap) {
 			$name = trim($recap->firstname.' '.$recap->lastname);
-			$recipient = (string) $recap->email;
+			if ((string) $recap->email === '') {
+				$failures[] = $name.': no email';
+				continue;
+			}
+
+			$recipient = $recap->email;
 			$content = $this->zulipMessage($recap, $period);
 			if ($testRecipient !== '') {
 				$recipient = $testRecipient;
 				$content = $langs->transnoentities('HrMonthlyCheckTestMessageFor', $name)."\n\n".$content;
 			} else {
 				$content .= "\n\n".$this->answerLinks($url);
-			}
-			if ($recipient === '') {
-				$failures[] = $name.': no email';
-				continue;
 			}
 			if (!$notifier->sendDirect($recipient, $content)) {
 				$failures[] = $name.': '.$notifier->getError();
@@ -139,6 +140,11 @@ class HrMonthlyCheckCron
 		if ($testRecipient === null) {
 			return -1;
 		}
+		$stream = getDolGlobalString('HRMONTHLYCHECK_ZULIP_HR_STREAM');
+		if ($stream === '') {
+			$this->error = 'Zulip stream is empty';
+			return -1;
+		}
 
 		$period = hrmonthlycheckCurrentPeriod();
 		$loader = new HrMonthlyCheckRecap($this->db);
@@ -153,12 +159,7 @@ class HrMonthlyCheckCron
 		$this->output = $langs->transnoentities('HrMonthlyCheckHrNotification', hrmonthlycheckPeriodLabel($period, $langs), $counts['confirmed'], $counts['changes'], $counts['none']);
 		$this->output .= "\n\n[".$langs->transnoentities('HrMonthlyCheckSeeAnswers').']('.$url.')';
 
-		$stream = getDolGlobalString('HRMONTHLYCHECK_ZULIP_HR_STREAM');
 		$topic = getDolGlobalString('HRMONTHLYCHECK_ZULIP_HR_TOPIC') ?: 'HR monthly check';
-		if ($stream === '') {
-			$this->error = 'Zulip stream is empty';
-			return -1;
-		}
 		if ($testRecipient !== '') {
 			$sent = $notifier->sendDirect($testRecipient, $langs->transnoentities('HrMonthlyCheckTestMessageFor', '#'.$stream.' > '.$topic)."\n\n".$this->output);
 		} else {
