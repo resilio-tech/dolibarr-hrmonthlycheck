@@ -82,7 +82,6 @@ class HrMonthlyCheckCron
 			return -1;
 		}
 
-		$periodLabel = hrmonthlycheckPeriodLabel($period, $langs);
 		$url = dol_buildpath('/hrmonthlycheck/mycheck.php', 3).'?period='.$period;
 
 		$sent = 0;
@@ -90,7 +89,7 @@ class HrMonthlyCheckCron
 		foreach ($recaps as $recap) {
 			$name = trim($recap->firstname.' '.$recap->lastname);
 			$recipient = (string) $recap->email;
-			$content = $this->zulipMessage($recap, $periodLabel, $url);
+			$content = $this->zulipMessage($recap, $period, $url);
 			if ($testRecipient !== '') {
 				$recipient = $testRecipient;
 				$content = $langs->transnoentities('HrMonthlyCheckTestMessageFor', $name)."\n\n".$content;
@@ -140,15 +139,16 @@ class HrMonthlyCheckCron
 		}
 
 		$period = hrmonthlycheckCurrentPeriod();
-		$answer = new HrMonthlyCheckAnswer($this->db);
-		$nbChanges = $answer->countChangeRequests($period);
-		if ($nbChanges < 0) {
-			$this->error = $answer->error;
+		$loader = new HrMonthlyCheckRecap($this->db);
+		$recaps = $loader->fetchAll($period);
+		if ($recaps === null) {
+			$this->error = $loader->error;
 			return -1;
 		}
+		$counts = hrmonthlycheckCountAnswers($recaps);
 
 		$url = dol_buildpath('/hrmonthlycheck/answers.php', 3).'?period='.$period;
-		$this->output = $langs->transnoentities('HrMonthlyCheckHrNotification', hrmonthlycheckPeriodLabel($period, $langs), $nbChanges);
+		$this->output = $langs->transnoentities('HrMonthlyCheckHrNotification', hrmonthlycheckPeriodLabel($period, $langs), $counts['confirmed'], $counts['changes'], $counts['none']);
 		$this->output .= "\n\n[".$langs->transnoentities('HrMonthlyCheckSeeAnswers').']('.$url.')';
 
 		$stream = getDolGlobalString('HRMONTHLYCHECK_ZULIP_HR_STREAM');
@@ -193,16 +193,17 @@ class HrMonthlyCheckCron
 	 * Zulip message sent to an employee.
 	 *
 	 * @param stdClass $recap       Recap of the employee
-	 * @param string   $periodLabel Month and year
+	 * @param string   $period      Period in the YYYYMM format
 	 * @param string   $url         Page where the employee answers
 	 * @return string Zulip Markdown
 	 */
-	private function zulipMessage(stdClass $recap, string $periodLabel, string $url): string
+	private function zulipMessage(stdClass $recap, string $period, string $url): string
 	{
 		global $langs;
 
 		$content = $langs->transnoentities('HrMonthlyCheckGreeting', $recap->firstname)."\n\n";
-		$content .= $langs->transnoentities('HrMonthlyCheckMessageIntro', $periodLabel)."\n\n";
+		$content .= $langs->transnoentities('HrMonthlyCheckMessageIntro', hrmonthlycheckPeriodLabel($period, $langs))."\n";
+		$content .= $langs->transnoentities('HrMonthlyCheckAnswerBefore', dol_print_date(hrmonthlycheckHrReviewDate($period), '%d %B %Y', 'gmt', $langs))."\n\n";
 		$content .= '['.$langs->transnoentities('HrMonthlyCheckConfirmButton').']('.$url.'&answer=confirm)';
 		$content .= ' | ['.$langs->transnoentities('HrMonthlyCheckChangeButton').']('.$url.'&answer=change)';
 

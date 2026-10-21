@@ -97,30 +97,6 @@ class HrMonthlyCheckAnswer
 	}
 
 	/**
-	 * Number of change requests for a period.
-	 *
-	 * @param string $period Period in the YYYYMM format
-	 * @return int Negative on error
-	 */
-	public function countChangeRequests(string $period): int
-	{
-		global $conf;
-
-		$sql = "SELECT COUNT(rowid) as nb FROM ".$this->db->prefix()."hrmonthlycheck_answer";
-		$sql .= " WHERE entity = ".((int) $conf->entity);
-		$sql .= " AND yearmonth = '".$this->db->escape($period)."'";
-		$sql .= " AND status = ".self::STATUS_CHANGE_REQUESTED;
-		$resql = $this->db->query($sql);
-		if (!$resql) {
-			$this->error = $this->db->lasterror();
-			return -1;
-		}
-		$obj = $this->db->fetch_object($resql);
-
-		return $obj ? (int) $obj->nb : 0;
-	}
-
-	/**
 	 * Status badge of an answer.
 	 *
 	 * @param int|null  $status      Answer status, null when the employee did not answer

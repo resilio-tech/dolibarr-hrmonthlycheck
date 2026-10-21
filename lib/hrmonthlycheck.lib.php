@@ -21,6 +21,8 @@
  * \brief   Library files with common functions for HrMonthlyCheck
  */
 
+const HRMONTHLYCHECK_HR_REVIEW_DAY = 21;
+
 /**
  * Prepare admin pages header
  *
@@ -109,6 +111,28 @@ function hrmonthlycheckPrintRecapTable($loader, $recaps, $title)
 }
 
 /**
+ * Number of employees who confirmed, asked for a change or did not answer.
+ *
+ * @param array<int,stdClass> $recaps Recaps loaded by HrMonthlyCheckRecap::fetchAll()
+ * @return array{confirmed:int,changes:int,none:int}
+ */
+function hrmonthlycheckCountAnswers(array $recaps): array
+{
+	$counts = array('confirmed' => 0, 'changes' => 0, 'none' => 0);
+	foreach ($recaps as $recap) {
+		if ((int) $recap->answer_status === HrMonthlyCheckAnswer::STATUS_CONFIRMED) {
+			$counts['confirmed']++;
+		} elseif ((int) $recap->answer_status === HrMonthlyCheckAnswer::STATUS_CHANGE_REQUESTED) {
+			$counts['changes']++;
+		} else {
+			$counts['none']++;
+		}
+	}
+
+	return $counts;
+}
+
+/**
  * Whether a string is a period in the YYYYMM format.
  *
  * @param string $period Period to check
@@ -159,6 +183,17 @@ function hrmonthlycheckPeriodLabel($period, $outputlangs)
 	$bounds = hrmonthlycheckPeriodBounds($period);
 
 	return dol_print_date($bounds[0], '%B %Y', 'gmt', $outputlangs);
+}
+
+/**
+ * Day of a period on which HR reviews the answers, at midnight GMT.
+ *
+ * @param string $period Period in the YYYYMM format
+ * @return int
+ */
+function hrmonthlycheckHrReviewDate($period)
+{
+	return (int) dol_mktime(0, 0, 0, (int) substr($period, 4, 2), HRMONTHLYCHECK_HR_REVIEW_DAY, (int) substr($period, 0, 4), 'gmt');
 }
 
 /**

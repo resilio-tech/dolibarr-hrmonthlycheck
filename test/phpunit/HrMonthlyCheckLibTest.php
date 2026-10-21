@@ -24,6 +24,7 @@
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(__FILE__).'/../../lib/hrmonthlycheck.lib.php';
+require_once dirname(__FILE__).'/../../class/HrMonthlyCheckAnswer.class.php';
 
 /**
  * Class HrMonthlyCheckLibTest
@@ -46,6 +47,21 @@ class HrMonthlyCheckLibTest extends TestCase
 		$this->assertFalse(hrmonthlycheckIsValidPeriod('2026-09'));
 		$this->assertFalse(hrmonthlycheckIsValidPeriod("202609' OR 1=1"));
 		$this->assertFalse(hrmonthlycheckIsValidPeriod(''));
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testAnswersAreCountedByStatus(): void
+	{
+		$recaps = array(
+			(object) array('answer_status' => '1'),
+			(object) array('answer_status' => '1'),
+			(object) array('answer_status' => '2'),
+			(object) array('answer_status' => null),
+		);
+
+		$this->assertSame(array('confirmed' => 2, 'changes' => 1, 'none' => 1), hrmonthlycheckCountAnswers($recaps));
 	}
 
 	/**

@@ -66,9 +66,10 @@ HrMonthlyCheckNoAnswer = No answer
 HrMonthlyCheckGreeting = Hello %s,
 HrMonthlyCheckIntro = Here is the HR information we have for you for %s. Please check it and tell us if something is wrong.
 HrMonthlyCheckMessageIntro = Your HR information for %s is ready to be checked. Please open it in Dolibarr and tell us if something is wrong.
+HrMonthlyCheckAnswerBefore = Please answer before **%s**, the day HR reviews the answers.
 HrMonthlyCheckConfirmButton = I confirm the information is correct
 HrMonthlyCheckChangeButton = I want to make a change
-HrMonthlyCheckHrNotification = The employees have answered the HR monthly check of %s: %s change request(s).
+HrMonthlyCheckHrNotification = HR monthly check for %s: %s confirmation(s), %s change request(s), %s without answer.
 HrMonthlyCheckSeeAnswers = See the answers in Dolibarr
 HrMonthlyCheckTestMessageFor = **[TEST]** Message for %s
 
