@@ -55,7 +55,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 require_once DOL_DOCUMENT_ROOT.'/holiday/class/holiday.class.php';
 require_once '../lib/hrmonthlycheck.lib.php';
 
-$langs->loadLangs(array('admin', 'holiday', 'hrmonthlycheck@hrmonthlycheck'));
+$langs->loadLangs(array('admin', 'errors', 'holiday', 'hrmonthlycheck@hrmonthlycheck'));
 
 if (!$user->admin) {
 	accessforbidden();
@@ -69,6 +69,13 @@ $backtopage = GETPOST('backtopage', 'alpha');
  * Actions
  */
 
+$testMode = GETPOSTINT('test_mode');
+$testRecipient = GETPOST('test_recipient', 'alphanohtml');
+if ($action == 'update' && $testMode && !isValidEmail($testRecipient)) {
+	setEventMessages($langs->trans('ErrorBadEMail', $testRecipient), null, 'errors');
+	$action = '';
+}
+
 if ($action == 'update') {
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_WORKRATE_FIELD', GETPOST('workrate_field', 'aZ09'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_BYOD_FIELD', GETPOST('byod_field', 'aZ09'), 'chaine', 0, '', $conf->entity);
@@ -77,8 +84,8 @@ if ($action == 'update') {
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_ZULIP_BOT_EMAIL', GETPOST('zulip_email', 'alphanohtml'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_ZULIP_HR_STREAM', GETPOST('zulip_stream', 'alphanohtml'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_ZULIP_HR_TOPIC', GETPOST('zulip_topic', 'alphanohtml'), 'chaine', 0, '', $conf->entity);
-	dolibarr_set_const($db, 'HRMONTHLYCHECK_TEST_MODE', GETPOSTINT('test_mode') ? 1 : 0, 'chaine', 0, '', $conf->entity);
-	dolibarr_set_const($db, 'HRMONTHLYCHECK_TEST_RECIPIENT', GETPOST('test_recipient', 'alphanohtml'), 'chaine', 0, '', $conf->entity);
+	dolibarr_set_const($db, 'HRMONTHLYCHECK_TEST_MODE', $testMode, 'chaine', 0, '', $conf->entity);
+	dolibarr_set_const($db, 'HRMONTHLYCHECK_TEST_RECIPIENT', $testRecipient, 'chaine', 0, '', $conf->entity);
 	$apikey = trim((string) GETPOST('zulip_apikey', 'none'));
 	if ($apikey !== '') {
 		dolibarr_set_const($db, 'HRMONTHLYCHECK_ZULIP_BOT_APIKEY', dolEncrypt($apikey), 'chaine', 0, '', $conf->entity);

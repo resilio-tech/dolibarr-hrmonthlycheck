@@ -168,7 +168,7 @@ function hrmonthlycheckPeriodLabel($period, $outputlangs)
  * @param string $testRecipient Zulip email of the test recipient, empty when test mode is off
  * @return string
  */
-function hrmonthlycheckRecipient($intended, $testRecipient)
+function hrmonthlycheckRecipient(string $intended, string $testRecipient): string
 {
 	return $testRecipient !== '' ? $testRecipient : $intended;
 }

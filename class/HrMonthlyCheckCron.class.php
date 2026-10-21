@@ -150,11 +150,16 @@ class HrMonthlyCheckCron
 		$this->output = $langs->transnoentities('HrMonthlyCheckHrNotification', hrmonthlycheckPeriodLabel($period, $langs), $nbChanges);
 		$this->output .= "\n\n[".$langs->transnoentities('HrMonthlyCheckSeeAnswers').']('.$url.')';
 
+		$stream = getDolGlobalString('HRMONTHLYCHECK_ZULIP_HR_STREAM');
 		$topic = getDolGlobalString('HRMONTHLYCHECK_ZULIP_HR_TOPIC') ?: 'HR monthly check';
+		if ($stream === '') {
+			$this->error = 'Zulip stream is empty';
+			return -1;
+		}
 		if ($testRecipient !== '') {
-			$sent = $notifier->sendDirect($testRecipient, $langs->transnoentities('HrMonthlyCheckTestMessageFor', 'HR')."\n\n".$this->output);
+			$sent = $notifier->sendDirect($testRecipient, $langs->transnoentities('HrMonthlyCheckTestMessageFor', '#'.$stream.' > '.$topic)."\n\n".$this->output);
 		} else {
-			$sent = $notifier->sendStream(getDolGlobalString('HRMONTHLYCHECK_ZULIP_HR_STREAM'), $topic, $this->output);
+			$sent = $notifier->sendStream($stream, $topic, $this->output);
 		}
 		if (!$sent) {
 			$this->error = $notifier->getError();

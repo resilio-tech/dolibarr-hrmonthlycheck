@@ -193,7 +193,7 @@ class HrMonthlyCheckRecap
 	}
 
 	/**
-	 * Add to each recap the IBANs of all its bank accounts, the default one first.
+	 * Add to each recap the IBANs of all its bank accounts.
 	 *
 	 * @param array<int,stdClass> $recaps Recaps keyed by user id
 	 * @return bool False on error
@@ -207,7 +207,7 @@ class HrMonthlyCheckRecap
 		$sql = "SELECT rib.fk_user, rib.iban_prefix as iban";
 		$sql .= " FROM ".$this->db->prefix()."user_rib as rib";
 		$sql .= " WHERE rib.fk_user IN (".$this->db->sanitize(implode(',', array_keys($recaps))).")";
-		$sql .= " ORDER BY rib.default_rib DESC, rib.rowid";
+		$sql .= " ORDER BY rib.rowid";
 
 		$resql = $this->db->query($sql);
 		if (!$resql) {

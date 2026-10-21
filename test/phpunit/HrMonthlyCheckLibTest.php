@@ -51,7 +51,7 @@ class HrMonthlyCheckLibTest extends TestCase
 	/**
 	 * @return void
 	 */
-	public function testTestRecipientReplacesTheIntendedOne()
+	public function testTestRecipientReplacesTheIntendedOne(): void
 	{
 		$this->assertSame('tester@example.com', hrmonthlycheckRecipient('employee@example.com', 'tester@example.com'));
 		$this->assertSame('employee@example.com', hrmonthlycheckRecipient('employee@example.com', ''));
