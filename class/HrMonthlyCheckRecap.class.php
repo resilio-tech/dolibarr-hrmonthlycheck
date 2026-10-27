@@ -41,9 +41,6 @@ class HrMonthlyCheckRecap
 	/** @var ExtraFields User extrafields */
 	private $extrafields;
 
-	/** @var string Code of the user extrafield holding the work rate */
-	private $workrateField;
-
 	/** @var string Code of the user extrafield holding BYOD */
 	private $byodField;
 
@@ -59,7 +56,6 @@ class HrMonthlyCheckRecap
 		$this->extrafields = new ExtraFields($db);
 		$labels = $this->extrafields->fetch_name_optionals_label('user');
 
-		$this->workrateField = $this->configuredField('HRMONTHLYCHECK_WORKRATE_FIELD', $labels);
 		$this->byodField = $this->configuredField('HRMONTHLYCHECK_BYOD_FIELD', $labels);
 	}
 
@@ -94,10 +90,7 @@ class HrMonthlyCheckRecap
 
 		$sql = "SELECT u.rowid, u.firstname, u.lastname, u.email, u.salary, u.weeklyhours, u.dateemployment, u.dateemploymentend,";
 		$sql .= " u.address, u.zip, u.town, d.nom as state, d.code_departement as state_code, c.code as country_code, c.label as country,";
-		$sql .= " a.status as answer_status, a.note as answer_note, a.date_answer";
-		if ($this->workrateField !== '') {
-			$sql .= ", ue.".$this->workrateField." as workrate";
-		}
+		$sql .= " a.status as answer_status, a.note as answer_note, a.date_answer, ue.".HRMONTHLYCHECK_WORKRATE_EXTRAFIELD." as workrate";
 		if ($this->byodField !== '') {
 			$sql .= ", ue.".$this->byodField." as byod";
 		}
@@ -237,9 +230,7 @@ class HrMonthlyCheckRecap
 		$outputlangs->loadLangs(array('users', 'salaries', 'companies', 'bills'));
 
 		$fields = array();
-		if ($this->workrateField !== '') {
-			$fields['workrate'] = $outputlangs->transnoentities('HrMonthlyCheckWorkRate');
-		}
+		$fields['workrate'] = $outputlangs->transnoentities('HrMonthlyCheckWorkRate');
 		$fields['weeklyhours'] = $outputlangs->transnoentities('WeeklyHours');
 		$fields['salary'] = $outputlangs->transnoentities('Salary');
 		if ($this->byodField !== '') {
@@ -267,9 +258,7 @@ class HrMonthlyCheckRecap
 		global $conf;
 
 		$values = array();
-		if ($this->workrateField !== '') {
-			$values['workrate'] = $this->extraFieldText($this->workrateField, $recap->workrate, $outputlangs);
-		}
+		$values['workrate'] = hrmonthlycheckWorkRateText($recap->workrate, $outputlangs);
 		$values['weeklyhours'] = ((string) $recap->weeklyhours !== '') ? price($recap->weeklyhours, 0, $outputlangs, 0, 0) : '';
 		$values['salary'] = ((string) $recap->salary !== '') ? price($recap->salary, 0, $outputlangs, 1, -1, -1, $conf->currency) : '';
 		if ($this->byodField !== '') {

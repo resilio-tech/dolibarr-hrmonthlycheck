@@ -31,15 +31,17 @@ Monthly check of their HR information by the employees, so HR no longer has to c
 
 In **Setup > Modules > HR Monthly Check**:
 
-- **Work rate** and **BYOD**: the user extrafields holding them
+- **BYOD**: the user extrafield holding it
 - **Unpaid leave types**: the leave types counted as unpaid leave. Only approved leaves are counted
 - **Zulip**: site URL, bot email and API key, HR stream and topic. The API key is stored encrypted
-- **Test mode**: while it is on, every message (one per employee and the HR notification) is sent as a direct message to the test recipient only, without the confirm and change links of the employee message, so the scheduled jobs can be run by hand without reaching the employees
+- **Test mode**: while it is on, every message (one per employee and the HR notification) is sent as a direct message to the test recipient only, so the scheduled jobs can be run by hand without reaching the employees. The employee message then links only to the check page of the test recipient, without the confirm and change links
 
 The two scheduled jobs are disabled by default. Enable them in **Setup > Scheduled jobs** once the setup is complete:
 
 - `HR monthly check: send the recap to employees`, on the 15th at 08:00
 - `HR monthly check: notify HR`, on the 21st at 08:00
+
+The module adds a *Work rate* field (in percent) to the user card.
 
 An employee is a user flagged as employee, enabled, whose employment dates cover at least one day of the month.
 

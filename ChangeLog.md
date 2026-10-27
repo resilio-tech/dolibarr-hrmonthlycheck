@@ -1,5 +1,14 @@
 # CHANGELOG HRMONTHLYCHECK FOR [DOLIBARR ERP CRM](https://www.dolibarr.org)
 
+## Unreleased
+
+### New Features
+- Link to the check page in the employee message, also in test mode where it opens the page of the test recipient
+- Work rate field in percent added by the module on the user card, shown as e.g. "90%" or "77,7%", instead of a user extrafield chosen in the setup
+
+### Tests
+- `HrMonthlyCheckLibTest.php` - links of the employee message and work rate text
+
 ## 1.1.0 (2026-10-21)
 
 ### New Features

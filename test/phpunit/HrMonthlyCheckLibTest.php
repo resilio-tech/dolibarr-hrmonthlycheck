@@ -66,6 +66,77 @@ class HrMonthlyCheckLibTest extends TestCase
 	/**
 	 * @return void
 	 */
+	public function testWorkRateIsShownInPercent(): void
+	{
+		$langs = $this->frenchLangs();
+
+		$this->assertSame('90%', hrmonthlycheckWorkRateText('90.00000000', $langs));
+		$this->assertSame('77,7%', hrmonthlycheckWorkRateText('77.70000000', $langs));
+		$this->assertSame('77,78%', hrmonthlycheckWorkRateText('77.78', $langs));
+		$this->assertSame('100%', hrmonthlycheckWorkRateText(100, $langs));
+		$this->assertSame('0%', hrmonthlycheckWorkRateText('0', $langs));
+		$this->assertSame('', hrmonthlycheckWorkRateText(null, $langs));
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testEmployeeLinksWithAnswers(): void
+	{
+		$links = hrmonthlycheckEmployeeLinks('https://erp/mycheck.php?period=202610', true, $this->keyLangs());
+
+		$this->assertSame('[HrMonthlyCheckSeeMyCheck](https://erp/mycheck.php?period=202610)'
+			.' | [HrMonthlyCheckConfirmButton](https://erp/mycheck.php?period=202610&answer=confirm)'
+			.' | [HrMonthlyCheckChangeButton](https://erp/mycheck.php?period=202610&answer=change)', $links);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testEmployeeLinksWithoutAnswers(): void
+	{
+		$links = hrmonthlycheckEmployeeLinks('https://erp/mycheck.php?period=202610', false, $this->keyLangs());
+
+		$this->assertSame('[HrMonthlyCheckSeeMyCheck](https://erp/mycheck.php?period=202610)', $links);
+	}
+
+	/**
+	 * @return object Language with the French decimal separator
+	 */
+	private function frenchLangs(): object
+	{
+		return new class {
+			/**
+			 * @param string $key Translation key
+			 * @return string
+			 */
+			public function transnoentitiesnoconv(string $key): string
+			{
+				return $key === 'SeparatorDecimal' ? ',' : $key;
+			}
+		};
+	}
+
+	/**
+	 * @return object Language returning the translation keys
+	 */
+	private function keyLangs(): object
+	{
+		return new class {
+			/**
+			 * @param string $key Translation key
+			 * @return string
+			 */
+			public function transnoentities(string $key): string
+			{
+				return $key;
+			}
+		};
+	}
+
+	/**
+	 * @return void
+	 */
 	public function testLeaveInsideThePeriodKeepsItsHalfDays()
 	{
 		$leave = hrmonthlycheckClipLeave(self::SEP_01 + 2 * self::DAY, self::SEP_01 + 4 * self::DAY, 2, self::SEP_01, self::SEP_30);

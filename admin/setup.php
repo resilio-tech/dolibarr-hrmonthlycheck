@@ -73,7 +73,6 @@ if ($action == 'update') {
 	$testMode = (int) GETPOST('test_mode', 'int');
 	$testRecipient = GETPOST('test_recipient', 'alphanohtml');
 	$testSetupValid = !$testMode || isValidEmail($testRecipient);
-	dolibarr_set_const($db, 'HRMONTHLYCHECK_WORKRATE_FIELD', GETPOST('workrate_field', 'aZ09'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_BYOD_FIELD', GETPOST('byod_field', 'aZ09'), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_UNPAID_LEAVE_TYPES', implode(',', array_map('intval', GETPOST('unpaid_leave_types', 'array:int'))), 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'HRMONTHLYCHECK_ZULIP_SITE', GETPOST('zulip_site', 'alphanohtml'), 'chaine', 0, '', $conf->entity);
@@ -104,6 +103,7 @@ $form = new Form($db);
 
 $extrafields = new ExtraFields($db);
 $userFields = $extrafields->fetch_name_optionals_label('user');
+unset($userFields[HRMONTHLYCHECK_WORKRATE_EXTRAFIELD]);
 
 $holiday = new Holiday($db);
 $leaveTypes = array();
@@ -130,9 +130,6 @@ print '<input type="hidden" name="action" value="update">';
 
 print '<table class="noborder centpercent">';
 print '<tr class="liste_titre"><td class="titlefield">'.$langs->trans("Parameter").'</td><td>'.$langs->trans("Value").'</td></tr>';
-
-print '<tr class="oddeven"><td>'.$langs->trans("HrMonthlyCheckWorkRateField").'</td>';
-print '<td>'.$form->selectarray('workrate_field', $userFields, getDolGlobalString('HRMONTHLYCHECK_WORKRATE_FIELD'), 1, 0, 0, '', 1).'</td></tr>';
 
 print '<tr class="oddeven"><td>'.$langs->trans("HrMonthlyCheckByodField").'</td>';
 print '<td>'.$form->selectarray('byod_field', $userFields, getDolGlobalString('HRMONTHLYCHECK_BYOD_FIELD'), 1, 0, 0, '', 1).'</td></tr>';
