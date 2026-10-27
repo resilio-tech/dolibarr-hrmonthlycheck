@@ -54,7 +54,7 @@ class modHrMonthlyCheck extends DolibarrModules
 
 		$this->editor_name = 'Slordef';
 		$this->editor_url = '';
-		$this->version = '1.1.0';
+		$this->version = '1.2.0';
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		$this->picto = 'fa-user-check';
 
