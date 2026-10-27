@@ -98,9 +98,8 @@ class HrMonthlyCheckCron
 			if ($testRecipient !== '') {
 				$recipient = $testRecipient;
 				$content = $langs->transnoentities('HrMonthlyCheckTestMessageFor', $name)."\n\n".$content;
-			} else {
-				$content .= "\n\n".$this->answerLinks($url);
 			}
+			$content .= "\n\n".hrmonthlycheckEmployeeLinks($url, $testRecipient === '', $langs);
 			if (!$notifier->sendDirect($recipient, $content)) {
 				$failures[] = $name.': '.$notifier->getError();
 				continue;
@@ -208,19 +207,5 @@ class HrMonthlyCheckCron
 		$content .= $langs->transnoentities('HrMonthlyCheckAnswerBefore', dol_print_date(hrmonthlycheckHrReviewDate($period), '%d %B %Y', 'gmt', $langs));
 
 		return $content;
-	}
-
-	/**
-	 * Links with which the employee confirms or asks for a change.
-	 *
-	 * @param string $url Page where the employee answers
-	 * @return string Zulip Markdown
-	 */
-	private function answerLinks(string $url): string
-	{
-		global $langs;
-
-		return '['.$langs->transnoentities('HrMonthlyCheckConfirmButton').']('.$url.'&answer=confirm)'
-			.' | ['.$langs->transnoentities('HrMonthlyCheckChangeButton').']('.$url.'&answer=change)';
 	}
 }

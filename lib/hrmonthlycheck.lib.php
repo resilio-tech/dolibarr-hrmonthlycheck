@@ -25,6 +25,7 @@ require_once __DIR__.'/../class/HrMonthlyCheckAnswer.class.php';
 
 const HRMONTHLYCHECK_EMPLOYEE_CHECK_DAY = 15;
 const HRMONTHLYCHECK_HR_REVIEW_DAY = 21;
+const HRMONTHLYCHECK_WORKRATE_EXTRAFIELD = 'hrmonthlycheck_workrate';
 
 /**
  * Prepare admin pages header
@@ -197,6 +198,42 @@ function hrmonthlycheckPeriodLabel($period, $outputlangs)
 function hrmonthlycheckHrReviewDate($period)
 {
 	return (int) dol_mktime(0, 0, 0, (int) substr($period, 4, 2), HRMONTHLYCHECK_HR_REVIEW_DAY, (int) substr($period, 0, 4), 'gmt');
+}
+
+/**
+ * Work rate as shown to the employee, e.g. "90%" or "77,7%".
+ *
+ * @param float|string|null $workrate    Work rate in percent
+ * @param Translate         $outputlangs Language
+ * @return string Empty when not set
+ */
+function hrmonthlycheckWorkRateText($workrate, $outputlangs)
+{
+	if ((string) $workrate === '') {
+		return '';
+	}
+	$number = rtrim(rtrim(number_format((float) $workrate, 2, '.', ''), '0'), '.');
+
+	return str_replace('.', $outputlangs->transnoentitiesnoconv('SeparatorDecimal'), $number).'%';
+}
+
+/**
+ * Zulip links of the employee message, with the answer links only when the employee can answer from them.
+ *
+ * @param string    $url         Page where the employee checks their information
+ * @param bool      $withAnswers Add the confirm and change links
+ * @param Translate $outputlangs Language
+ * @return string Zulip Markdown
+ */
+function hrmonthlycheckEmployeeLinks($url, $withAnswers, $outputlangs)
+{
+	$links = array('['.$outputlangs->transnoentities('HrMonthlyCheckSeeMyCheck').']('.$url.')');
+	if ($withAnswers) {
+		$links[] = '['.$outputlangs->transnoentities('HrMonthlyCheckConfirmButton').']('.$url.'&answer=confirm)';
+		$links[] = '['.$outputlangs->transnoentities('HrMonthlyCheckChangeButton').']('.$url.'&answer=change)';
+	}
+
+	return implode(' | ', $links);
 }
 
 /**

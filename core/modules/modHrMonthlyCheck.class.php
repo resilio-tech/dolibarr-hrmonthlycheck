@@ -25,6 +25,7 @@
  */
 include_once DOL_DOCUMENT_ROOT.'/core/modules/DolibarrModules.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 require_once __DIR__.'/../../lib/hrmonthlycheck.lib.php';
 
 /**
@@ -211,6 +212,13 @@ class modHrMonthlyCheck extends DolibarrModules
 	{
 		$result = $this->_load_tables('/hrmonthlycheck/sql/');
 		if ($result < 0) {
+			return -1;
+		}
+
+		$extrafields = new ExtraFields($this->db);
+		$result = $extrafields->addExtraField(HRMONTHLYCHECK_WORKRATE_EXTRAFIELD, 'HrMonthlyCheckWorkRate', 'double', 100, '5,2', 'user', 0, 0, '', '', 1, '', '1', '', '', '', 'hrmonthlycheck@hrmonthlycheck', 'isModEnabled("hrmonthlycheck")');
+		if ($result < 0) {
+			$this->error = $extrafields->error;
 			return -1;
 		}
 
