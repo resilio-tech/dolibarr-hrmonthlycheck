@@ -1,6 +1,6 @@
 # CHANGELOG HRMONTHLYCHECK FOR [DOLIBARR ERP CRM](https://www.dolibarr.org)
 
-## Unreleased
+## 1.2.0 (2026-10-27)
 
 ### New Features
 - Link to the check page in the employee message, also in test mode where it opens the page of the test recipient
