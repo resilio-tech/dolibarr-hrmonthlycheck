@@ -1,6 +1,6 @@
 # CHANGELOG HRMONTHLYCHECK FOR [DOLIBARR ERP CRM](https://www.dolibarr.org)
 
-## 1.2.1 (unreleased)
+## 1.2.1 (2026-11-05)
 
 ### Documentation
 - The employee message gives the salary preparation by the HR circle as the reason for the deadline, instead of the review of the answers
